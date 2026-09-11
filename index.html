@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>andes.code - Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                        url('https://assetdelivery.roblox.com/v1/asset?id=6184866078') no-repeat center center fixed;
+            background-size: cover;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        header {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(45deg, #00ffcc, #ff007f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+            letter-spacing: 2px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: rgba(15, 15, 25, 0.88);
+            padding: 30px;
+            border-radius: 16px;
+            position: relative;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        /* Hiệu ứng viền chuyển động */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, #ff0055, #00ffff, #ff00ff, #00ffcc, #ff0055);
+            background-size: 400%;
+            z-index: -1;
+            border-radius: 18px;
+            animation: glowingBorder 8s linear infinite;
+        }
+
+        @keyframes glowingBorder {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #00ffcc;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(10, 10, 15, 0.9);
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: #00ffcc;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 130px;
+            font-family: monospace;
+        }
+
+        .btn-create {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #ff007f, #7f00ff);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.3s, transform 0.2s;
+            box-shadow: 0 4px 15px rgba(255, 0, 127, 0.4);
+        }
+
+        .btn-create:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* Khu vực kết quả */
+        #result-container {
+            margin-top: 25px;
+            display: none;
+        }
+
+        .result-section {
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            font-size: 1rem;
+            color: #ff007f;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .code-box {
+            background: #07070a;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #00ffcc;
+            word-break: break-all;
+            white-space: pre-wrap;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px dashed #444;
+            margin-bottom: 8px;
+        }
+
+        .btn-copy {
+            background: linear-gradient(45deg, #00ffcc, #007fff);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: opacity 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 255, 204, 0.3);
+        }
+
+        .btn-copy:hover {
+            opacity: 0.9;
+        }
+
+        .copied-msg {
+            color: #00ffcc;
+            font-size: 0.85rem;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>andes.code</h1>
+    </header>
+
+    <div class="container">
+        <!-- Khung tên script -->
+        <div class="form-group">
+            <label for="scriptName">Khung Tên (Đường dẫn):</label>
+            <input type="text" id="scriptName" placeholder="Nhập tên của bạn (Ví dụ: myhub, freemium)...">
+        </div>
+
+        <!-- Khung code gốc (không giới hạn chữ) -->
+        <div class="form-group">
+            <label for="scriptContent">Khung Code Gốc (Raw Script - Không giới hạn):</label>
+            <textarea id="scriptContent" placeholder="Dán toàn bộ code Lua/Roblox của bạn vào đây..."></textarea>
+        </div>
+
+        <!-- Khung tạo -->
+        <button class="btn-create" onclick="generateScript()">Tạo Loadstring & Raw Script</button>
+
+        <!-- Phần hiển thị kết quả -->
+        <div id="result-container">
+            <!-- Loadstring Result -->
+            <div class="result-section">
+                <div class="result-title">Loadstring Script:</div>
+                <div class="code-box" id="displayLoadstring"></div>
+                <button class="btn-copy" onclick="copyText('displayLoadstring', 'msg1')">Copy Loadstring</button>
+                <span class="copied-msg" id="msg1" style="display: none;">Đã copy!</span>
+            </div>
+
+            <!-- Raw Script Result -->
+            <div class="result-section">
+                <div class="result-title">Raw Script (Code gốc):</div>
+                <div class="code-box" id="displayRaw"></div>
+                <button class="btn-copy" onclick="copyText('displayRaw', 'msg2')">Copy Raw Script</button>
+                <span class="copied-msg" id="msg2" style="display: none;">Đã copy!</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateScript() {
+            let name = document.getElementById('scriptName').value.trim();
+            let rawContent = document.getElementById('scriptContent').value; // Không dùng trim() để giữ nguyên cấu trúc code nếu cần
+
+            if (!name) {
+                name = "default";
+            }
+
+            if (!rawContent.trim()) {
+                alert('Vui lòng nhập code vào khung code gốc!');
+                return;
+            }
+
+            // Tạo đường dẫn loadstring theo mẫu yêu cầu
+            let loadstringResult = `loadstring(game:HttpGet("https://raw.andes/${name}/refs/heads/main/loader.lua"))()`;
+
+            // Hiển thị kết quả lên giao diện
+            document.getElementById('displayLoadstring').innerText = loadstringResult;
+            document.getElementById('displayRaw').innerText = rawContent;
+            document.getElementById('result-container').style.display = 'block';
+
+            // Ẩn các thông báo copy cũ
+            document.getElementById('msg1').style.display = 'none';
+            document.getElementById('msg2').style.display = 'none';
+        }
+
+        function copyText(elementId, msgId) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const msg = document.getElementById(msgId);
+                msg.style.display = 'inline-block';
+                setTimeout(() => {
+                    msg.style.display = 'none';
+                }, 2000);
+            }).catch(err => {
+                alert('Không thể copy: ' + err);
+            });
+        }
+    </script>
+
+</body>
+</html>
